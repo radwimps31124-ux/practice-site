@@ -1,21 +1,1076 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <title>練習サイト</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VELOCE MOTORS — 厳選中古車専門店</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --black: #080808;
+      --white: #f0ede8;
+      --accent: #c8a96e;
+      --accent-dim: #8a6f3f;
+      --gray: #1a1a1a;
+      --gray-mid: #2e2e2e;
+      --gray-light: #666;
+      --text: #c8c4bc;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      background-color: pink;
+      background: var(--black);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
     }
-    h1 {
-      color: red;
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s;
+      transform: translate(-50%, -50%);
     }
-    p {
-      color: blue;
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.5;
+      transition: transform 0.15s ease, width 0.2s, height 0.2s, opacity 0.2s;
+      transform: translate(-50%, -50%);
+    }
+    body:hover .cursor-ring { opacity: 0.5; }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 28px 60px;
+      background: linear-gradient(to bottom, rgba(8,8,8,0.95), transparent);
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 4px;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--gray-light);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--black);
+      background: var(--accent);
+      padding: 10px 24px;
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: background 0.3s;
+    }
+    .nav-cta:hover { background: var(--white); }
+
+    /* Hero */
+    .hero {
+      height: 100vh;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 60px 80px;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(200,169,110,0.04) 0%, transparent 50%),
+        linear-gradient(to bottom, transparent 40%, rgba(8,8,8,0.95) 100%),
+        url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1920&q=80') center/cover no-repeat;
+    }
+
+    .hero-tag {
+      position: absolute;
+      top: 140px;
+      right: 60px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      opacity: 0;
+      animation: fadeIn 1s 0.5s forwards;
+    }
+
+    .hero-content {
+      position: relative;
+      max-width: 800px;
+      opacity: 0;
+      animation: slideUp 1s 0.3s forwards;
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 10vw, 130px);
+      line-height: 0.9;
+      color: var(--white);
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+    }
+    .hero-title span {
+      color: transparent;
+      -webkit-text-stroke: 1px var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 14px;
+      line-height: 1.9;
+      color: var(--gray-light);
+      max-width: 420px;
+      margin-bottom: 48px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .btn-primary {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--accent);
+      padding: 16px 40px;
+      text-decoration: none;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--white);
+      transform: translateX(-101%);
+      transition: transform 0.3s;
+    }
+    .btn-primary:hover::after { transform: translateX(0); }
+    .btn-primary span { position: relative; z-index: 1; }
+
+    .btn-ghost {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: color 0.3s;
+    }
+    .btn-ghost::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    .btn-ghost:hover { color: var(--accent); }
+    .btn-ghost:hover::before { width: 60px; }
+
+    .hero-stats {
+      position: absolute;
+      bottom: 80px;
+      right: 60px;
+      display: flex;
+      gap: 50px;
+      opacity: 0;
+      animation: fadeIn 1s 0.8s forwards;
+    }
+    .stat { text-align: right; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .stat-num span { color: var(--accent); font-size: 24px; }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gray-light);
+      text-transform: uppercase;
+    }
+
+    /* Ticker */
+    .ticker {
+      background: var(--accent);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .ticker-inner {
+      display: inline-flex;
+      animation: ticker 20s linear infinite;
+    }
+    .ticker-item {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 14px;
+      letter-spacing: 4px;
+      color: var(--black);
+      padding: 0 40px;
+    }
+    .ticker-item::before {
+      content: '◆';
+      margin-right: 40px;
+      opacity: 0.4;
+    }
+
+    /* Section commons */
+    section { padding: 120px 60px; }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 6vw, 80px);
+      color: var(--white);
+      line-height: 0.95;
+      letter-spacing: 1px;
+      margin-bottom: 60px;
+    }
+
+    /* Cars grid */
+    .cars-section { background: var(--gray); }
+
+    .cars-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 60px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 4px;
+    }
+    .filter-tab {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border: 1px solid var(--gray-mid);
+      background: none;
+      color: var(--gray-light);
+      cursor: none;
+      transition: all 0.3s;
+    }
+    .filter-tab.active, .filter-tab:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--black);
+    }
+
+    .cars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+
+    .car-card {
+      background: var(--black);
+      overflow: hidden;
+      position: relative;
+      group: true;
+    }
+
+    .car-card:first-child {
+      grid-column: span 2;
+    }
+
+    .car-img-wrap {
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      position: relative;
+    }
+    .car-card:first-child .car-img-wrap {
+      aspect-ratio: 16/8;
+    }
+
+    .car-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      filter: brightness(0.85);
+    }
+    .car-card:hover .car-img {
+      transform: scale(1.06);
+      filter: brightness(0.7);
+    }
+
+    .car-badge {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 6px 12px;
+      background: var(--accent);
+      color: var(--black);
+    }
+
+    .car-info {
+      padding: 28px;
+      border-top: 1px solid var(--gray-mid);
+    }
+
+    .car-brand {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .car-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      color: var(--white);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .car-specs {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .car-spec {
+      font-size: 11px;
+      color: var(--gray-light);
+      letter-spacing: 1px;
+    }
+    .car-spec strong {
+      display: block;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 400;
+      margin-bottom: 2px;
+    }
+
+    .car-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .car-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px;
+      color: var(--white);
+      letter-spacing: 1px;
+    }
+    .car-price small {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--gray-light);
+      font-weight: 300;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+
+    .car-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 2px;
+      transition: all 0.3s;
+    }
+    .car-btn:hover { color: var(--white); border-color: var(--white); }
+
+    /* About */
+    .about-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: center;
+      padding: 120px 60px;
+    }
+
+    .about-visual {
+      position: relative;
+    }
+    .about-img {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      filter: brightness(0.8) contrast(1.1);
+    }
+    .about-accent-box {
+      position: absolute;
+      bottom: -30px;
+      right: -30px;
+      width: 200px;
+      height: 200px;
+      border: 1px solid var(--accent);
+      opacity: 0.3;
+    }
+    .about-year {
+      position: absolute;
+      top: 30px;
+      left: -20px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 120px;
+      color: var(--accent);
+      opacity: 0.07;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .about-content {}
+    .about-body {
+      font-size: 14px;
+      line-height: 2;
+      color: var(--gray-light);
+      margin-bottom: 40px;
+    }
+
+    .about-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+      margin-bottom: 50px;
+    }
+    .feature {
+      border-left: 2px solid var(--accent);
+      padding-left: 20px;
+    }
+    .feature-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--white);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .feature-desc {
+      font-size: 12px;
+      color: var(--gray-light);
+      line-height: 1.7;
+    }
+
+    /* Services */
+    .services-section { background: var(--gray); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-top: 60px;
+    }
+
+    .service-card {
+      background: var(--black);
+      padding: 50px 36px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform 0.4s;
+    }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card:hover { background: #111; }
+
+    .service-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 60px;
+      color: var(--gray-mid);
+      line-height: 1;
+      margin-bottom: 24px;
+      transition: color 0.4s;
+    }
+    .service-card:hover .service-num { color: var(--accent-dim); }
+
+    .service-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      color: var(--white);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .service-desc {
+      font-size: 12px;
+      line-height: 1.9;
+      color: var(--gray-light);
+    }
+
+    /* Contact */
+    .contact-section {
+      background: var(--black);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 100px;
+      align-items: start;
+      padding: 120px 60px;
+    }
+
+    .contact-info {}
+    .contact-body {
+      font-size: 14px;
+      line-height: 2;
+      color: var(--gray-light);
+      margin-bottom: 50px;
+    }
+
+    .contact-details {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .contact-item {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .contact-item-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      min-width: 80px;
+      padding-top: 2px;
+    }
+    .contact-item-value {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gray-light);
+      text-transform: uppercase;
+    }
+    .form-input, .form-select, .form-textarea {
+      background: var(--gray);
+      border: 1px solid var(--gray-mid);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+      font-weight: 300;
+      padding: 14px 18px;
+      outline: none;
+      transition: border-color 0.3s;
+      cursor: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent);
+    }
+    .form-textarea { resize: vertical; min-height: 120px; }
+    .form-select { appearance: none; }
+
+    .form-submit {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--accent);
+      border: none;
+      padding: 18px;
+      cursor: none;
+      transition: background 0.3s;
+      margin-top: 8px;
+    }
+    .form-submit:hover { background: var(--white); }
+
+    /* Footer */
+    footer {
+      background: var(--gray);
+      padding: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--gray-mid);
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 24px;
+      letter-spacing: 4px;
+      color: var(--white);
+    }
+    .footer-logo span { color: var(--accent); }
+
+    .footer-copy {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gray-light);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 30px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--gray-light);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover { color: var(--accent); }
+
+    /* Animations */
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+    .hero-content { transform: translateY(30px); }
+
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--gray-mid);
+      margin: 0 60px;
     }
   </style>
 </head>
 <body>
-  <h1>こんにちは！</h1>
-  <p>これは練習用のサイトです。</p>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Nav -->
+  <nav>
+    <a href="#" class="nav-logo">VELOCE<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="#cars">在庫車両</a></li>
+      <li><a href="#about">私たちについて</a></li>
+      <li><a href="#services">サービス</a></li>
+      <li><a href="#contact">お問い合わせ</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">来店予約</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-tag">Curated Since 2008</div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Premium Used Cars — Tokyo</p>
+      <h1 class="hero-title">DRIVE YOUR<br><span>STORY</span></h1>
+      <p class="hero-desc">厳選された一台と出会う場所。妥協しないあなたのために、本物だけを揃えました。</p>
+      <div class="hero-actions">
+        <a href="#cars" class="btn-primary"><span>在庫を見る</span></a>
+        <a href="#about" class="btn-ghost">私たちについて</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">200<span>+</span></div>
+        <div class="stat-label">在庫台数</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">15<span>年</span></div>
+        <div class="stat-label">業界経験</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">98<span>%</span></div>
+        <div class="stat-label">顧客満足度</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ticker -->
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span class="ticker-item">PORSCHE</span>
+      <span class="ticker-item">BMW</span>
+      <span class="ticker-item">MERCEDES-BENZ</span>
+      <span class="ticker-item">FERRARI</span>
+      <span class="ticker-item">LAMBORGHINI</span>
+      <span class="ticker-item">AUDI</span>
+      <span class="ticker-item">LEXUS</span>
+      <span class="ticker-item">MASERATI</span>
+      <span class="ticker-item">PORSCHE</span>
+      <span class="ticker-item">BMW</span>
+      <span class="ticker-item">MERCEDES-BENZ</span>
+      <span class="ticker-item">FERRARI</span>
+      <span class="ticker-item">LAMBORGHINI</span>
+      <span class="ticker-item">AUDI</span>
+      <span class="ticker-item">LEXUS</span>
+      <span class="ticker-item">MASERATI</span>
+    </div>
+  </div>
+
+  <!-- Cars -->
+  <section class="cars-section" id="cars">
+    <div class="cars-header">
+      <div>
+        <p class="section-label">Inventory</p>
+        <h2 class="section-title" style="margin-bottom:0">FEATURED<br>VEHICLES</h2>
+      </div>
+      <div class="filter-tabs">
+        <button class="filter-tab active">すべて</button>
+        <button class="filter-tab">スポーツ</button>
+        <button class="filter-tab">セダン</button>
+        <button class="filter-tab">SUV</button>
+      </div>
+    </div>
+
+    <div class="cars-grid">
+      <div class="car-card">
+        <div class="car-img-wrap">
+          <span class="car-badge">New Arrival</span>
+          <img class="car-img" src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1200&q=80" alt="Porsche 911">
+        </div>
+        <div class="car-info">
+          <p class="car-brand">Porsche</p>
+          <h3 class="car-name">911 Carrera 4S</h3>
+          <div class="car-specs">
+            <div class="car-spec"><strong>2021</strong>年式</div>
+            <div class="car-spec"><strong>12,000</strong>km</div>
+            <div class="car-spec"><strong>450</strong>PS</div>
+            <div class="car-spec"><strong>PDK</strong>AT</div>
+          </div>
+          <div class="car-footer">
+            <div class="car-price">¥18,800<small>万円</small></div>
+            <a href="#" class="car-btn">詳細を見る →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="car-card">
+        <div class="car-img-wrap">
+          <img class="car-img" src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80" alt="BMW M3">
+        </div>
+        <div class="car-info">
+          <p class="car-brand">BMW</p>
+          <h3 class="car-name">M3 Competition</h3>
+          <div class="car-specs">
+            <div class="car-spec"><strong>2022</strong>年式</div>
+            <div class="car-spec"><strong>8,500</strong>km</div>
+          </div>
+          <div class="car-footer">
+            <div class="car-price">¥12,500<small>万円</small></div>
+            <a href="#" class="car-btn">詳細 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="car-card">
+        <div class="car-img-wrap">
+          <span class="car-badge">Certified</span>
+          <img class="car-img" src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80" alt="Mercedes AMG">
+        </div>
+        <div class="car-info">
+          <p class="car-brand">Mercedes-Benz</p>
+          <h3 class="car-name">AMG GT 63 S</h3>
+          <div class="car-specs">
+            <div class="car-spec"><strong>2020</strong>年式</div>
+            <div class="car-spec"><strong>22,000</strong>km</div>
+          </div>
+          <div class="car-footer">
+            <div class="car-price">¥16,200<small>万円</small></div>
+            <a href="#" class="car-btn">詳細 →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="car-card">
+        <div class="car-img-wrap">
+          <img class="car-img" src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80" alt="Lexus LC">
+        </div>
+        <div class="car-info">
+          <p class="car-brand">Lexus</p>
+          <h3 class="car-name">LC 500 Convertible</h3>
+          <div class="car-specs">
+            <div class="car-spec"><strong>2021</strong>年式</div>
+            <div class="car-spec"><strong>5,200</strong>km</div>
+          </div>
+          <div class="car-footer">
+            <div class="car-price">¥14,800<small>万円</small></div>
+            <a href="#" class="car-btn">詳細 →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <div class="about-section" id="about">
+    <div class="about-visual">
+      <div class="about-year">2008</div>
+      <img class="about-img" src="https://images.unsplash.com/photo-1562141961-b8a7e781dd78?w=800&q=80" alt="Showroom">
+      <div class="about-accent-box"></div>
+    </div>
+    <div class="about-content">
+      <p class="section-label">Our Story</p>
+      <h2 class="section-title">BEYOND<br>ORDINARY</h2>
+      <p class="about-body">
+        VELOCEは2008年の創業以来、「本物の一台」との出会いを届けてきました。<br>
+        私たちが扱うのは、単なる移動手段ではありません。オーナーの個性を映し、走る喜びを約束する、特別な存在です。<br><br>
+        全車両を専門スタッフが徹底検査し、品質と透明性を最優先に。妥協のない眼で選び抜いた車両のみをご提供しています。
+      </p>
+      <div class="about-features">
+        <div class="feature">
+          <div class="feature-title">徹底した品質検査</div>
+          <div class="feature-desc">200項目以上のチェックリストによる厳格な品質管理</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">透明な価格設定</div>
+          <div class="feature-desc">隠れた費用なし。見えるコストで安心の取引を</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">充実の保証制度</div>
+          <div class="feature-desc">購入後も安心。最長3年間の保証プランをご用意</div>
+        </div>
+        <div class="feature">
+          <div class="feature-title">ファイナンスサポート</div>
+          <div class="feature-desc">低金利ローンから各種リース。最適なプランをご提案</div>
+        </div>
+      </div>
+      <a href="#contact" class="btn-primary"><span>無料相談を予約する</span></a>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Services -->
+  <section class="services-section" id="services">
+    <p class="section-label">What We Offer</p>
+    <h2 class="section-title">OUR<br>SERVICES</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-num">01</div>
+        <div class="service-name">車両販売</div>
+        <div class="service-desc">国内外の厳選された中古車を取り揃え。お客様の理想の一台をご提案します。</div>
+      </div>
+      <div class="service-card">
+        <div class="service-num">02</div>
+        <div class="service-name">査定・買取</div>
+        <div class="service-desc">愛車の価値を正確に評価。業界最高水準の買取価格をお約束します。</div>
+      </div>
+      <div class="service-card">
+        <div class="service-num">03</div>
+        <div class="service-name">輸入代行</div>
+        <div class="service-desc">海外の希少モデルも取り寄せ可能。世界中から理想の一台を探します。</div>
+      </div>
+      <div class="service-card">
+        <div class="service-num">04</div>
+        <div class="service-name">メンテナンス</div>
+        <div class="service-desc">購入後も安心のアフターサービス。専任スタッフが愛車を守ります。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <div class="contact-section" id="contact">
+    <div class="contact-info">
+      <p class="section-label">Get In Touch</p>
+      <h2 class="section-title">VISIT<br>US</h2>
+      <p class="contact-body">
+        ご来店予約・お問い合わせはお気軽に。<br>
+        専任スタッフが丁寧にご対応いたします。
+      </p>
+      <div class="contact-details">
+        <div class="contact-item">
+          <span class="contact-item-label">住所</span>
+          <span class="contact-item-value">東京都港区南青山 1-2-3<br>VELOCEビル 1F</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-item-label">営業時間</span>
+          <span class="contact-item-value">10:00 — 19:00（火曜定休）</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-item-label">電話</span>
+          <span class="contact-item-value">03-1234-5678</span>
+        </div>
+        <div class="contact-item">
+          <span class="contact-item-label">メール</span>
+          <span class="contact-item-value">info@veloce-motors.jp</span>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">お名前</label>
+          <input type="text" class="form-input" placeholder="山田 太郎">
+        </div>
+        <div class="form-group">
+          <label class="form-label">電話番号</label>
+          <input type="tel" class="form-input" placeholder="090-0000-0000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メールアドレス</label>
+        <input type="email" class="form-input" placeholder="example@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">ご用件</label>
+        <select class="form-select">
+          <option>車両購入のご相談</option>
+          <option>査定・買取のご依頼</option>
+          <option>来店予約</option>
+          <option>その他</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">メッセージ</label>
+        <textarea class="form-textarea" placeholder="ご質問・ご要望をお聞かせください"></textarea>
+      </div>
+      <button class="form-submit">送信する →</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-logo">VELOCE<span>.</span></div>
+    <p class="footer-copy">© 2024 VELOCE MOTORS. ALL RIGHTS RESERVED.</p>
+    <ul class="footer-links">
+      <li><a href="#">プライバシー</a></li>
+      <li><a href="#">利用規約</a></li>
+      <li><a href="#">採用情報</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    // Cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function animCursor() {
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animCursor);
+    }
+    animCursor();
+
+    // Filter tabs
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+      });
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.car-card, .service-card, .feature').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
 </body>
 </html>
